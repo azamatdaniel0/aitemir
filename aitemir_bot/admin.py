@@ -1,4 +1,8 @@
 from django.contrib import admin
-from .models import Media
-# Register your models here.
-admin.site.register(Media)
+from .models import Instructions
+
+class InstructionsAdmin(admin.ModelAdmin):
+    pass
+
+admin.site.register(Instructions, InstructionsAdmin)
+

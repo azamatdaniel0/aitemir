@@ -17,12 +17,11 @@ from django.contrib import admin
 from django.urls import path
 from django.conf.urls.static import static
 from config import settings
-from aitemir_bot.views import GetAnswerAPIView, HelloAPIView
+from aitemir_bot.views import GetAnswerAPIView
 
 
 urlpatterns = [
     path('chat-bot/admin/', admin.site.urls),
-    path('chat-bot/hello/', HelloAPIView.as_view()),
     path('chat-bot/api/', GetAnswerAPIView.as_view()),
 ]
 
