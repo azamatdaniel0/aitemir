@@ -4,22 +4,10 @@ import requests
 import json
 from openai import OpenAI
 from decouple import config
-import torch
-import torchaudio
-from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor
 from datetime import datetime
 from .models import Media, RequestMedia
 from django.core.files.base import ContentFile
 
-
-url = "http://tts.ulut.kg/api/tts"
-headers = {
-  'Content-Type': 'application/json',
-  'Authorization': 'Bearer hyrtgvxvuTKC75c5JuxXMr1qH1MBlesYZgAGhJz09x2ro1GTTeEB2yJXPdFL5yDd'
-}
-# Assuming you have already loaded or defined your processor and model
-processor = Wav2Vec2Processor.from_pretrained("anton-l/wav2vec2-large-xlsr-53-kyrgyz")
-model = Wav2Vec2ForCTC.from_pretrained("anton-l/wav2vec2-large-xlsr-53-kyrgyz")
 API_KEY = config("OPENAI_API_KEY")
 
 class HelloAPIView(APIView):
@@ -36,34 +24,11 @@ class HelloAPIView(APIView):
 
 class GetAnswerAPIView(APIView):
     def post(self, request):
-        audio = self.request.FILES.get("audio")
+        transcription = self.request.get("text")
         
-        if audio is None: 
+        if transcription is None: 
              return Response('Повторите попытку еще раз')
-        media2 = RequestMedia(audios = audio)
-        media2.save()
-        audio = media2.audios
 
-
-        def process_audio_file(audio):
-            resampler = torchaudio.transforms.Resample(orig_freq=48_000, new_freq=16_000)
-            speech_array, sampling_rate = torchaudio.load(audio)
-            speech = resampler(speech_array).squeeze().numpy()
-            return speech, sampling_rate
-
-        def predict_text_from_audio(audio):
-            speech, sampling_rate = process_audio_file(audio)
-            inputs = processor(speech, sampling_rate=16_000, return_tensors="pt", padding=True)
-            
-            with torch.no_grad():
-                logits = model(inputs.input_values, attention_mask=inputs.attention_mask).logits
-            
-            predicted_ids = torch.argmax(logits, dim=-1)
-            transcription = processor.batch_decode(predicted_ids)
-            print(transcription)
-            return transcription
-
-        transcription = predict_text_from_audio(audio)
         print("==============================================")
         print("==============================================")
         print(transcription)
@@ -85,7 +50,7 @@ class GetAnswerAPIView(APIView):
         message = client.beta.threads.messages.create(
             thread_id=thread.id,
             role="user",
-            content=transcription[0],
+            content=transcription,
         )
 
         run = client.beta.threads.runs.create(
@@ -101,22 +66,9 @@ class GetAnswerAPIView(APIView):
                 for message in messages:
                     assert message.content[0].type == "text"
                     if message.role == "assistant":
-                        ass = message.content[0].text.value
-                        # The payload and headers remain the same
-                        payload = {
-                        "text": ass, 
-                        "speaker_id": "1"
-                        }
-                        # Make the POST request using the requests library
-                        response = requests.post(url, data=json.dumps(payload), headers=headers)
-                        audio_content = ContentFile(response.content)
-                        audio_model_instance = Media()
-                        time_ident = datetime.now()
-                        time_ident = str(time_ident)
-                        audio_model_instance.audios.save(f'{time_ident}_output.wav', audio_content)
-                        audio_model_instance.save()
+                        answer = message.content[0].text.value
                         client.beta.assistants.delete(assistant.id)
-                        return Response(data={"audio": audio_model_instance.audios.url, "text": ass, 'question': transcription[0]})
+                        return Response(data={"answer": answer})
                     
                     else:
                         return Response(data={"message": "something went wrong"})
