@@ -1,17 +1,30 @@
 services:
   web:
-    build: .
     command: python3 manage.py runserver 0.0.0.0:3335
-    volumes:
-      - .:/usr/src/app
+    build: .
+    expose:
+      - "3335"
     ports:
       - "3335:3335"
-    networks:
-      - db_network
-
-networks:
-  db_network:
-    driver: bridge
-
-volumes:
-  pgadmin_data:
+    volumes:
+      - ./backend:/app
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: postgres
+    expose:
+      - "5432"
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      timeout: 2s
+      retries: 10

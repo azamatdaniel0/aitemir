@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
+from os import environ
 
 from pathlib import Path
 
@@ -47,6 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    "rest_framework_simplejwt",
     'corsheaders',
     'aitemir_bot'
 ]
@@ -81,6 +83,11 @@ TEMPLATES = [
         },
     },
 ]
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
 
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.routing.application"
@@ -90,9 +97,13 @@ ASGI_APPLICATION = "config.routing.application"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "USER": environ.get("POSTGRES_USER"),
+        "PASSWORD": environ.get("POSTGRES_PASSWORD"),
+        "NAME": environ.get("POSTGRES_NAME"),
+        "HOST": environ.get("POSTGRES_DB"),
+        "PORT": "5432",
     }
 }
 
@@ -141,3 +152,13 @@ MEDIA_URL = '/chat-bot/api/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+AUTH_USER_MODEL = 'aitemir_bot.CustomUser'
+
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "azamatdaniel1@gmail.com"
+EMAIL_HOST_PASSWORD = "gcqyudsbipvtqqhu"
+DEFAULT_FROM_EMAIL = 'azamatdaniel1@gmail.com'

@@ -1,0 +1,6 @@
+gunicorn
+django-cors-headers
+openai
+djangorestframework 
+djangorestframework-simplejwt
+psycopg2-binary

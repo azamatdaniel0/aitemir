@@ -17,12 +17,16 @@ from django.contrib import admin
 from django.urls import path
 from django.conf.urls.static import static
 from config import settings
-from aitemir_bot.views import GetAnswerAPIView
+from aitemir_bot.views import GetAnswerAPIView, RegisterView, ResetPasswordView, PasswordResetConfirmView
 
 
 urlpatterns = [
     path('chat-bot/admin/', admin.site.urls),
     path('chat-bot/api/', GetAnswerAPIView.as_view()),
+    path('chat-bot/register/', RegisterView.as_view(), name='register'),
+    path('chat-bot/reset-password/', ResetPasswordView.as_view(), name='reset_password'),
+    path('chat-bot/reset-password-confirm/<uidb64>/<token>/', PasswordResetConfirmView.as_view(), name='reset_password_confirm'),
+
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
