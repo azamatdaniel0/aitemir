@@ -32,11 +32,7 @@ CORS_ALLOW_HEADERS = "*"
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
-CSRF_TRUSTED_ORIGINS = ['https://10.118.50.31', 'http://localhost:3000',
-                        'https://localhost:3000', 'http://10.210.118.110',
-                        'https://10.210.118.110', 'http://0.0.0.0', 'https://0.0.0.0', 'http://10.118.210.1:8989/', 
-                        'http://10.118.210.1:3000/', 'http://10.118.210.100',  'https://10.118.210.100']
-
+CSRF_COOKIE_SECURE = False
 
 # Application definition
 
@@ -59,7 +55,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
