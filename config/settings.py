@@ -26,7 +26,8 @@ SECRET_KEY = 'django-insecure-tltd7f_s*thb6^dusym*zrt3_y(jx*zr7bbo78t8pv5o%4um51
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
+ALLOWED_HOSTS = ["https://passport.brisklyminds.com"]
+CSRF_TRUSTED_ORIGINS = ['https://passport.brisklyminds.com']
 
 
 # Application definition
@@ -47,21 +48,15 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'corsheaders.middleware.CorsMiddleware', 
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    
 ]
-ALLOWED_HOSTS = ["*"]
-CORS_ALLOW_METHODS = "*"
-CORS_ALLOW_HEADERS = "*"
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOW_CREDENTIALS = True
+
+ALLOWED_HOSTS = ["https://passport.brisklyminds.com"]
 CSRF_TRUSTED_ORIGINS = ['https://passport.brisklyminds.com']
 ROOT_URLCONF = 'config.urls'
 
