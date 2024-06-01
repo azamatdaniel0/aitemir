@@ -1,31 +1,45 @@
-# Aitemir Project
+aitemir
+This repository contains the code for the aitemir project.
 
-## Overview
+Getting Started
+To get started with this project, follow the instructions below to set up and run the application using Docker.
 
-This project provides the infrastructure to run and manage a web application using Docker Compose. Docker Compose allows managing multiple Docker containers as a single application, simplifying the setup and deployment of complex development and production environments.
+Prerequisites
+Make sure you have the following installed on your system:
 
-## Requirements
+Docker
+Docker Compose
+Installation
+Clone the repository
 
-- Docker
-- Docker Compose
+git clone https://github.com/azamatdaniel0/aitemir.git
+cd aitemir
 
-## Installation and Setup
+docker compose up -d --build
+Run database migrations
 
-1. **Clone the repository**
+docker compose exec web python3 manage.py makemigrations
+docker compose exec web python3 manage.py migrate
+Usage
+Once the containers are up and the migrations are run, you can access the application through the web interface.
 
-   Clone the repository to your local machine:
+Stopping the Application
+To stop the running containers, use:
 
-   ```bash
-   git clone https://github.com/azamatdaniel0/aitemir.git
-   cd aitemir
-  ```
+docker compose down
+Additional Commands
+To view the logs of the running containers:
 
+docker compose logs
+To access the web container's shell:
+docker compose exec web /bin/bash
+Contributing
+If you wish to contribute to this project, please follow the standard GitHub flow:
 
-2. **Start the containers**
+Fork the repository.
+Create a new branch.
+Make your changes.
+Submit a pull request.
+License
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-   Start the containers in detached mode and rebuild them if necessary:
-
-   ```bash
-  docker compose up -d --build
-
-  ```
