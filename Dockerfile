@@ -7,4 +7,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["gunicorn", "--bind", "0.0.0.0:3335", "config.wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:3333", "config.wsgi:application"]

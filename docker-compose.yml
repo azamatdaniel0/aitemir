@@ -1,11 +1,11 @@
 services:
   web:
-    command: python3 manage.py runserver 0.0.0.0:3335
+    command: python3 manage.py runserver 0.0.0.0:3333
     build: .
     expose:
-      - "3335"
+      - "3333"
     ports:
-      - "3335:3335"
+      - "3333:3333"
     volumes:
       - ./backend:/app
     env_file:
