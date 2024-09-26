@@ -4,3 +4,4 @@ openai
 djangorestframework 
 djangorestframework-simplejwt
 psycopg2-binary
+python-decouple==3.4

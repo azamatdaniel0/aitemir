@@ -1,30 +1,21 @@
 services:
   web:
-    command: python3 manage.py runserver 0.0.0.0:3333
     build: .
-    expose:
-      - "3333"
     ports:
       - "3333:3333"
+    command: sh -c "python manage.py runserver 0.0.0.0:3333"
     volumes:
-      - ./backend:/app
-    env_file:
-      - .env
-    depends_on:
-      db:
-        condition: service_healthy
+      - .:/usr/src/app
+    env_file: .env
+    restart: always
   db:
-    image: postgres
+    image: postgres:14.7
     expose:
       - "5432"
-    ports:
-      - "5432:5432"
+    environment:
+      POSTGRES_DB: your_db_name
+      POSTGRES_USER: your_db_user
+      POSTGRES_PASSWORD: your_db_password
     volumes:
-      - ./data:/var/lib/postgresql/data
-    env_file:
-      - .env
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 2s
-      timeout: 2s
-      retries: 10
+      - ./pgdata:/var/lib/postgresql/data/
+    restart: always

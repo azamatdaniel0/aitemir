@@ -26,7 +26,6 @@ urlpatterns = [
     path('chat-bot/register/', RegisterView.as_view(), name='register'),
     path('chat-bot/reset-password/', ResetPasswordView.as_view(), name='reset_password'),
     path('chat-bot/reset-password-confirm/<uidb64>/<token>/', PasswordResetConfirmView.as_view(), name='reset_password_confirm'),
-
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

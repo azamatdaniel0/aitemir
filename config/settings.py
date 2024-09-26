@@ -11,24 +11,28 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
 from os import environ
-
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-tltd7f_s*thb6^dusym*zrt3_y(jx*zr7bbo78t8pv5o%4um51'
+SECRET_KEY = environ.get('DJANGO_SECRET_KEY', 'your-secret-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-ALLOWED_HOSTS = ["https://passport.brisklyminds.com"]
-CSRF_TRUSTED_ORIGINS = ['https://passport.brisklyminds.com']
+DEBUG = environ.get('DJANGO_DEBUG', 'True') == 'True'
 
+ALLOWED_HOSTS = config("ALLOWED_HOSTS").split(",")
+
+CSRF_TRUSTED_ORIGINS = config("CSRF_TRUSTED_ORIGINS").split(",")
+
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = ["https://passport.brisklyminds.com"]
 
 # Application definition
 
@@ -45,19 +49,16 @@ INSTALLED_APPS = [
     'aitemir_bot'
 ]
 
-
 MIDDLEWARE = [
-    '**corsheaders.middleware.CorsMiddleware**',
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
-ALLOWED_HOSTS = ["https://passport.brisklyminds.com"]
-CSRF_TRUSTED_ORIGINS = ['https://passport.brisklyminds.com']
 ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
@@ -75,8 +76,10 @@ TEMPLATES = [
         },
     },
 ]
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 }
@@ -84,18 +87,17 @@ REST_FRAMEWORK = {
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.routing.application"
 
-
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
+        "NAME": environ.get("POSTGRES_DB"),
         "USER": environ.get("POSTGRES_USER"),
         "PASSWORD": environ.get("POSTGRES_PASSWORD"),
-        "NAME": environ.get("POSTGRES_NAME"),
-        "HOST": environ.get("POSTGRES_DB"),
-        "PORT": "5432",
+        "HOST": environ.get("POSTGRES_HOST", "db"),
+        "PORT": environ.get("POSTGRES_PORT", "5432"),
     }
 }
 
@@ -118,7 +120,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
@@ -130,14 +131,8 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
-
+# Static and media files
 STATIC_URL = 'static/'
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL = '/chat-bot/api/'
@@ -146,11 +141,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'aitemir_bot.CustomUser'
 
-
+# Email settings
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "azamatdaniel1@gmail.com"
-EMAIL_HOST_PASSWORD = "gcqyudsbipvtqqhu"
-DEFAULT_FROM_EMAIL = 'azamatdaniel1@gmail.com'
+EMAIL_HOST_USER = environ.get("EMAIL_HOST_USER", "azamatdaniel1@gmail.com")
+EMAIL_HOST_PASSWORD = environ.get("EMAIL_HOST_PASSWORD", "gcqyudsbipvtqqhu")
+DEFAULT_FROM_EMAIL = environ.get("DEFAULT_FROM_EMAIL", 'azamatdaniel1@gmail.com')

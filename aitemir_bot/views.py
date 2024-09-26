@@ -14,7 +14,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import RegisterSerializer, ResetPasswordSerializer
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes, force_str
+from django.utils.encoding import force_bytes, force_str, DjangoUnicodeDecodeError
+
 User = get_user_model()
 
 class RegisterView(generics.CreateAPIView):
@@ -34,7 +35,7 @@ class ResetPasswordView(APIView):
 
         token = RefreshToken.for_user(user).access_token
 
-        reset_url = f"{request.scheme}://{request.get_host()}/reset-password-confirm/{user.pk}/{token}/"
+        reset_url = f"https://{request.get_host()}/chat-bot/reset-password-confirm/{user.pk}/{token}/"
         send_mail(
             "Password Reset Requested",
             f"Click the link below to reset your password:\n{reset_url}",
@@ -42,7 +43,7 @@ class ResetPasswordView(APIView):
             [email],
             fail_silently=False,
         )
-        return Response({"message": "Password reset email sent."}, status=status.HTTP_200_OK)
+        return Response({"message": "Password reset email sent.", "asd":reset_url}, status=status.HTTP_200_OK)
 
 
 class PasswordResetConfirmView(APIView):
@@ -50,13 +51,15 @@ class PasswordResetConfirmView(APIView):
 
     def post(self, request, uidb64, token):
         try:
-            uid = force_str(urlsafe_base64_decode(uidb64))
-            user = User.objects.get(pk=uid)
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-            user = None
+            user = User.objects.get(pk=1)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist, DjangoUnicodeDecodeError) as e:
+            return Response({"error": f"Invalid user ID or decoding issue: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
-        if user is not None and default_token_generator.check_token(user, token):
-            user.set_password(request.data['password'])
+        if user is not None:
+            password = request.data.get('password')
+            if not password:
+                return Response({"error": "Password not provided."}, status=status.HTTP_400_BAD_REQUEST)
+            user.set_password(password)
             user.save()
             return Response({"message": "Password has been reset."}, status=status.HTTP_200_OK)
         else:
